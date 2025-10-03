@@ -19,6 +19,8 @@ namespace SP.Aplicacao
 
             // Application Services
             services.AddScoped<IClienteAppService, ClienteAppService>();
+            services.AddScoped<ISessaoAppService, SessaoAppService>();
+        services.AddScoped<IFinanceiroAppService, FinanceiroAppService>();
 
             return services;
         }

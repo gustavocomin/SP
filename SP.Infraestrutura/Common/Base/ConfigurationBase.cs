@@ -19,12 +19,13 @@ namespace SP.Infraestrutura.Common.Base
 
         /// <summary>
         /// Aplica AutoInclude automaticamente para propriedades de navegação de coleção.
+        /// Evita auto-relacionamentos para prevenir ciclos.
         /// </summary>
         private static void AplicarAutoInclude(EntityTypeBuilder<T> builder)
         {
             var propriedadesNavegacao = typeof(T)
                 .GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                .Where(p => IsNavigationCollectionProperty(p));
+                .Where(p => IsNavigationCollectionProperty(p) && !IsSelfReferencingProperty(p));
 
             foreach (var propriedade in propriedadesNavegacao)
             {
@@ -47,23 +48,35 @@ namespace SP.Infraestrutura.Common.Base
         /// </summary>
         private static bool IsNavigationCollectionProperty(PropertyInfo property)
         {
-            if (!property.PropertyType.IsGenericType) 
+            if (!property.PropertyType.IsGenericType)
                 return false;
 
             var genericType = property.PropertyType.GetGenericTypeDefinition();
-            
+
             // Verifica se é ICollection<>, IEnumerable<>, List<>, etc.
             var isCollection = genericType == typeof(ICollection<>) ||
                               genericType == typeof(IEnumerable<>) ||
                               genericType == typeof(List<>) ||
                               typeof(IEnumerable<>).IsAssignableFrom(genericType);
 
-            if (!isCollection) 
+            if (!isCollection)
                 return false;
 
             // Verifica se o tipo genérico é uma classe (possível entidade)
             var genericArgument = property.PropertyType.GetGenericArguments()[0];
             return genericArgument.IsClass && genericArgument != typeof(string);
+        }
+
+        /// <summary>
+        /// Verifica se a propriedade é um auto-relacionamento (mesmo tipo da entidade).
+        /// </summary>
+        private static bool IsSelfReferencingProperty(PropertyInfo property)
+        {
+            if (!property.PropertyType.IsGenericType)
+                return false;
+
+            var genericArgument = property.PropertyType.GetGenericArguments()[0];
+            return genericArgument == typeof(T);
         }
     }
 }

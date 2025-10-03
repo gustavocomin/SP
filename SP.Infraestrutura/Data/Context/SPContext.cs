@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using SP.Dominio.Clientes;
+using SP.Dominio.Sessoes;
 
 namespace SP.Infraestrutura.Data.Context
 {
@@ -9,7 +10,7 @@ namespace SP.Infraestrutura.Data.Context
 
         // DbSets
         public DbSet<Cliente> Clientes { get; set; }
-        // public DbSet<Sessao> Sessoes { get; set; }
+        public DbSet<Sessao> Sessoes { get; set; }
         // public DbSet<Pagamento> Pagamentos { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

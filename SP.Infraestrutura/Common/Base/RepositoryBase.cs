@@ -4,7 +4,28 @@ using SP.Infraestrutura.Common.Exceptions;
 
 namespace SP.Infraestrutura.Common.Base
 {
-    public abstract class RepositoryBase<T>(SPContext context) where T : class
+    /// <summary>
+    /// Interface base para repositórios
+    /// </summary>
+    public interface IRepositoryBase<T> where T : class
+    {
+        Task<T?> ObterPorIdAsync(int id);
+        Task<T> ObterPorIdObrigatorioAsync(int id);
+        Task<List<T>> ObterTodosAsync();
+        Task<List<T>> ObterTodosAtivosAsync();
+        Task<List<T>> ObterPorIdsAsync(IEnumerable<int> ids);
+        Task AdicionarAsync(T entity);
+        Task AdicionarRangeAsync(IEnumerable<T> entities);
+        void Atualizar(T entity);
+        void AtualizarRange(IEnumerable<T> entities);
+        void Remover(T entity);
+        void RemoverRange(IEnumerable<T> entities);
+        Task<bool> ExisteAsync(int id);
+        Task<int> ContarAsync();
+        Task<int> ContarAtivosAsync();
+    }
+
+    public abstract class RepositoryBase<T>(SPContext context) : IRepositoryBase<T> where T : class
     {
         protected readonly SPContext Context = context;
         protected readonly DbSet<T> DbSet = context.Set<T>();

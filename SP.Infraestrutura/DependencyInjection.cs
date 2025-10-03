@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SP.Infraestrutura.Data.Context;
 using SP.Infraestrutura.Entities.Clientes;
+using SP.Infraestrutura.Entities.Sessoes;
 using SP.Infraestrutura.UnitOfWork;
 
 namespace SP.Infraestrutura
@@ -26,6 +27,7 @@ namespace SP.Infraestrutura
 
             // Registro dos Repositórios
             services.AddScoped<IClienteRepository, ClienteRepository>();
+            services.AddScoped<ISessaoRepository, SessaoRepository>();
 
             return services;
         }
