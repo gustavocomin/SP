@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using SP.Dominio.Clientes;
 using SP.Dominio.Sessoes;
+using SP.Dominio.Localizacao;
 
 namespace SP.Infraestrutura.Data.Context
 {
@@ -11,6 +12,12 @@ namespace SP.Infraestrutura.Data.Context
         // DbSets
         public DbSet<Cliente> Clientes { get; set; }
         public DbSet<Sessao> Sessoes { get; set; }
+
+        // Localização
+        public DbSet<Pais> Paises { get; set; }
+        public DbSet<Estado> Estados { get; set; }
+        public DbSet<Cidade> Cidades { get; set; }
+
         // public DbSet<Pagamento> Pagamentos { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

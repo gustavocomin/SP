@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using SP.Aplicacao;
 using SP.Infraestrutura;
 using SP.Infraestrutura.Data.Context;
+using SP.IoC;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,7 +17,7 @@ builder.Services.AddSwaggerGen();
 
 // Configurar camadas
 builder.Services.AddInfraestrutura(builder.Configuration);
-builder.Services.AddAplicacao();
+builder.Services.ConfigurarDependencias();
 
 var app = builder.Build();
 

@@ -1,4 +1,5 @@
 ﻿using SP.Dominio.Enums;
+using SP.Dominio.Localizacao;
 
 namespace SP.Dominio.Clientes
 {
@@ -14,13 +15,17 @@ namespace SP.Dominio.Clientes
         public DateTime DataNascimento { get; set; }
 
         // Endereço
-        public string? Estado { get; set; }
-        public string? Cidade { get; set; }
+        public int? CidadeId { get; set; }
+        public virtual Cidade? Cidade { get; set; }
         public string? CEP { get; set; }
         public string? Endereco { get; set; }
         public string? Bairro { get; set; }
         public string? Complemento { get; set; }
         public string? Numero { get; set; }
+
+        // Campos legados (manter por compatibilidade)
+        public string? Estado { get; set; }
+        public string? CidadeNome { get; set; }
 
         // Campos Financeiros
         public decimal ValorSessao { get; set; }

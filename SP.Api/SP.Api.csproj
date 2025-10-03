@@ -16,6 +16,7 @@
     <ProjectReference Include="..\SP.Aplicacao\SP.Aplicacao.csproj" />
     <ProjectReference Include="..\SP.Infraestrutura\SP.Infraestrutura.csproj" />
     <ProjectReference Include="..\SP.Dominio\SP.Dominio.csproj" />
+    <ProjectReference Include="..\SP.IoC\SP.IoC.csproj" />
   </ItemGroup>
 
   <!-- Eventos de Build para Docker -->

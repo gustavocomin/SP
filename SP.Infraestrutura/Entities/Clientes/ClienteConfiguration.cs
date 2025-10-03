@@ -41,11 +41,14 @@ namespace SP.Infraestrutura.Entities.Clientes
                    .HasColumnType("date");
 
             // Endereço
+            builder.Property(c => c.CidadeId);
+
+            // Campos legados (manter por compatibilidade)
             builder.Property(c => c.Estado)
                    .HasMaxLength(2)
                    .IsFixedLength();
 
-            builder.Property(c => c.Cidade)
+            builder.Property(c => c.CidadeNome)
                    .HasMaxLength(100);
 
             builder.Property(c => c.CEP)
@@ -127,6 +130,15 @@ namespace SP.Infraestrutura.Entities.Clientes
             // Configurações adicionais para performance
             builder.HasIndex(c => new { c.Nome, c.Ativo })
                    .HasDatabaseName("ix_clientes_nome_ativo");
+
+            builder.HasIndex(c => c.CidadeId)
+                   .HasDatabaseName("ix_clientes_cidade_id");
+
+            // Relacionamentos
+            builder.HasOne(c => c.Cidade)
+                   .WithMany()
+                   .HasForeignKey(c => c.CidadeId)
+                   .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }
