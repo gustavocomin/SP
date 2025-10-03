@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  evolution-api:
+    image: atendai/evolution-api:latest
+    container_name: evolution-api
+    ports:
+      - "8080:8080"
+    environment:
+      # Servidor
+      - SERVER_PORT=8080
+      - SERVER_URL=http://localhost:8080
+      
+      # Autenticação (MUDE ESTA CHAVE!)
+      - AUTHENTICATION_API_KEY=sua-chave-super-secreta-aqui-123456
+      
+      # Database
+      - DATABASE_ENABLED=true
+      - DATABASE_CONNECTION_URI=file:./evolution.db
+      - DATABASE_CONNECTION_CLIENT_NAME=evolution_api
+      
+      # Logs
+      - LOG_LEVEL=ERROR
+      - LOG_COLOR=false
+      
+      # WhatsApp
+      - QRCODE_LIMIT=30
+      
+      # Webhook (opcional)
+      - WEBHOOK_GLOBAL_ENABLED=false
+      
+    volumes:
+      - evolution_data:/evolution/instances
+      - evolution_store:/evolution/store
+    restart: unless-stopped
+    networks:
+      - evolution_network
+
+volumes:
+  evolution_data:
+  evolution_store:
+
+networks:
+  evolution_network:
+    driver: bridge
