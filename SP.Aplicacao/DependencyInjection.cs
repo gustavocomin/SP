@@ -22,7 +22,9 @@ namespace SP.Aplicacao
             services.AddScoped<ISessaoAppService, SessaoAppService>();
             services.AddScoped<IFinanceiroAppService, FinanceiroAppService>();
             services.AddScoped<ICalendarioAppService, CalendarioAppService>();
-        services.AddScoped<IWhatsAppService, WhatsAppService>();
+
+            // WhatsApp Service com HttpClient
+            services.AddHttpClient<IWhatsAppService, WhatsAppService>();
 
             return services;
         }

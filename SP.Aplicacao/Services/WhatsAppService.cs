@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using System.Text.Json;
 using System.Text;
 using System.Net.Http;
+using System.Globalization;
 using SP.Dominio.Sessoes;
 using SP.Dominio.Enums;
 
@@ -22,21 +23,23 @@ namespace SP.Aplicacao.Services
     {
         private readonly IClienteRepository _clienteRepository;
         private readonly ISessaoRepository _sessaoRepository;
-
         private readonly IConfiguration _configuration;
         private readonly ILogger<WhatsAppService> _logger;
+        private readonly HttpClient _httpClient;
 
 
         public WhatsAppService(
             IClienteRepository clienteRepository,
             ISessaoRepository sessaoRepository,
             IConfiguration configuration,
-            ILogger<WhatsAppService> logger)
+            ILogger<WhatsAppService> logger,
+            HttpClient httpClient)
         {
             _clienteRepository = clienteRepository;
             _sessaoRepository = sessaoRepository;
             _configuration = configuration;
             _logger = logger;
+            _httpClient = httpClient;
         }
 
         #region Envio de Mensagens
@@ -474,19 +477,59 @@ namespace SP.Aplicacao.Services
         {
             try
             {
-                // TODO: Implementar integração real com Evolution API
                 _logger.LogInformation("Enviando via Evolution API para {Telefone}", mensagem.Telefone);
 
-                var resultado = new ResultadoWhatsAppDto
+                // Configurações do Evolution API
+                var evolutionConfig = config.Terceiros;
+                if (evolutionConfig == null)
                 {
-                    MessageId = $"evolution_{Guid.NewGuid()}",
-                    Status = StatusEnvioWhatsApp.Enviado,
-                    DataEnvio = DateTime.Now,
-                    Provedor = ProvedorWhatsApp.Evolution,
-                    Custo = 0.00m // Evolution é gratuito
+                    return ResultadoDto<ResultadoWhatsAppDto>.ComErro("Configuração Evolution API não encontrada");
+                }
+
+                var apiUrl = evolutionConfig.ApiUrl ?? "http://localhost:8080";
+                var apiKey = evolutionConfig.ApiKey ?? "sua-chave-super-secreta-aqui-123456";
+                var instanceName = evolutionConfig.ConfiguracoesEspecificas.GetValueOrDefault("InstanceName", "psicologo")?.ToString() ?? "psicologo";
+
+                // Preparar payload para Evolution API
+                var payload = new
+                {
+                    number = mensagem.Telefone,
+                    text = mensagem.Mensagem
                 };
 
-                return ResultadoDto<ResultadoWhatsAppDto>.ComSucesso(resultado);
+                var jsonContent = JsonSerializer.Serialize(payload);
+                var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+                // Configurar headers
+                _httpClient.DefaultRequestHeaders.Clear();
+                _httpClient.DefaultRequestHeaders.Add("apikey", apiKey);
+
+                // Enviar mensagem
+                var url = $"{apiUrl}/message/sendText/{instanceName}";
+                var response = await _httpClient.PostAsync(url, content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var responseContent = await response.Content.ReadAsStringAsync();
+                    _logger.LogInformation("Mensagem enviada com sucesso via Evolution API: {Response}", responseContent);
+
+                    var resultado = new ResultadoWhatsAppDto
+                    {
+                        MessageId = $"evolution_{Guid.NewGuid()}",
+                        Status = StatusEnvioWhatsApp.Enviado,
+                        DataEnvio = DateTime.Now,
+                        Provedor = ProvedorWhatsApp.Evolution,
+                        Custo = 0.00m // Evolution é gratuito
+                    };
+
+                    return ResultadoDto<ResultadoWhatsAppDto>.ComSucesso(resultado);
+                }
+                else
+                {
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    _logger.LogError("Erro ao enviar via Evolution API: {StatusCode} - {Error}", response.StatusCode, errorContent);
+                    return ResultadoDto<ResultadoWhatsAppDto>.ComErro($"Erro Evolution API: {response.StatusCode} - {errorContent}");
+                }
             }
             catch (Exception ex)
             {

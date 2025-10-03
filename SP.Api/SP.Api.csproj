@@ -4,6 +4,7 @@
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <DockerComposeProjectPath>..\docker-compose.yml</DockerComposeProjectPath>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,5 +17,11 @@
     <ProjectReference Include="..\SP.Infraestrutura\SP.Infraestrutura.csproj" />
     <ProjectReference Include="..\SP.Dominio\SP.Dominio.csproj" />
   </ItemGroup>
+
+  <!-- Eventos de Build para Docker -->
+  <Target Name="StartPostgreSQL" BeforeTargets="Build">
+    <Message Text="🚀 Iniciando PostgreSQL para desenvolvimento..." Importance="high" />
+    <Exec Command="docker-compose up -d postgres" ContinueOnError="true" />
+  </Target>
 
 </Project>

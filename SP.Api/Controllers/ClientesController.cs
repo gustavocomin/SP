@@ -34,7 +34,7 @@ namespace SP.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<ClienteDto>> Criar([FromBody] CriarClienteDto criarClienteDto)
+        public async Task<ActionResult<ClienteDto>> Criar(CriarClienteDto criarClienteDto)
         {
             var resultado = await _clienteAppService.CriarAsync(criarClienteDto);
 

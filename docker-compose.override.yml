@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  # Apenas PostgreSQL para desenvolvimento híbrido
+  postgres:
+    image: postgres:15-alpine
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: sp_database
+      POSTGRES_USER: sp_user
+      POSTGRES_PASSWORD: sp_password123
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sp_user -d sp_database -p 5432"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Remover sp-api do override (rodará no Visual Studio)
+  sp-api:
+    profiles:
+      - disabled
+
+  # Remover evolution-api do override (opcional para desenvolvimento)
+  evolution-api:
+    profiles:
+      - disabled
+
+volumes:
+  postgres_data:
