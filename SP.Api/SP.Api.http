@@ -1,0 +1,6 @@
+@SP.Api_HostAddress = http://localhost:5231
+
+GET {{SP.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
