@@ -122,4 +122,9 @@ public class Sessao
     /// Sessões reagendadas a partir desta
     /// </summary>
     public ICollection<Sessao> SessoesReagendadas { get; set; } = new List<Sessao>();
+
+    /// <summary>
+    /// ID do evento no Google Calendar (para sincronização)
+    /// </summary>
+    public string? GoogleCalendarEventId { get; set; }
 }

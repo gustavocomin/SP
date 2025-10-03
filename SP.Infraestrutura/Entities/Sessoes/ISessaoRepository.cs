@@ -65,6 +65,11 @@ public interface ISessaoRepository : IRepositoryBase<Sessao>
     Task<bool> VerificarConflitoHorarioAsync(DateTime dataHora, int duracaoMinutos, int? sessaoIdExcluir = null);
 
     /// <summary>
+    /// Obtém sessões que conflitam com o horário especificado
+    /// </summary>
+    Task<List<Sessao>> ObterSessoesConflitantesAsync(DateTime dataHora, int duracaoMinutos, int? sessaoIdExcluir = null);
+
+    /// <summary>
     /// Obtém próximas sessões (próximos 7 dias)
     /// </summary>
     Task<List<Sessao>> ObterProximasSessoesAsync();

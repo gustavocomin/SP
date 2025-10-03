@@ -83,6 +83,10 @@ public class SessaoConfiguration : ConfigurationBase<Sessao>
             .IsRequired()
             .HasDefaultValue(true);
 
+        // Google Calendar Integration
+        builder.Property(s => s.GoogleCalendarEventId)
+            .HasMaxLength(255);
+
         // Propriedades de auditoria
         builder.Property(s => s.DataCriacao)
             .IsRequired()

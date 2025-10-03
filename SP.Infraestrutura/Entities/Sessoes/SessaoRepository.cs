@@ -144,8 +144,8 @@ public class SessaoRepository(SPContext context) : RepositoryBase<Sessao>(contex
         var inicioSessao = dataHora;
         var fimSessao = dataHora.AddMinutes(duracaoMinutos);
 
-        var query = DbSet.Where(s => s.Ativo && 
-                                    s.Status != StatusSessao.CanceladaCliente && 
+        var query = DbSet.Where(s => s.Ativo &&
+                                    s.Status != StatusSessao.CanceladaCliente &&
                                     s.Status != StatusSessao.CanceladaPsicologo);
 
         if (sessaoIdExcluir.HasValue)
@@ -153,9 +153,32 @@ public class SessaoRepository(SPContext context) : RepositoryBase<Sessao>(contex
             query = query.Where(s => s.Id != sessaoIdExcluir.Value);
         }
 
-        return await query.AnyAsync(s => 
-            (s.DataHoraAgendada < fimSessao && 
+        return await query.AnyAsync(s =>
+            (s.DataHoraAgendada < fimSessao &&
              s.DataHoraAgendada.AddMinutes(s.DuracaoMinutos) > inicioSessao));
+    }
+
+    public async Task<List<Sessao>> ObterSessoesConflitantesAsync(DateTime dataHora, int duracaoMinutos, int? sessaoIdExcluir = null)
+    {
+        var inicioSessao = dataHora;
+        var fimSessao = dataHora.AddMinutes(duracaoMinutos);
+
+        var query = DbSet
+            .Include(s => s.Cliente)
+            .Where(s => s.Ativo &&
+                       s.Status != StatusSessao.CanceladaCliente &&
+                       s.Status != StatusSessao.CanceladaPsicologo);
+
+        if (sessaoIdExcluir.HasValue)
+        {
+            query = query.Where(s => s.Id != sessaoIdExcluir.Value);
+        }
+
+        return await query
+            .Where(s => s.DataHoraAgendada < fimSessao &&
+                       s.DataHoraAgendada.AddMinutes(s.DuracaoMinutos) > inicioSessao)
+            .OrderBy(s => s.DataHoraAgendada)
+            .ToListAsync();
     }
 
     public async Task<List<Sessao>> ObterProximasSessoesAsync()
